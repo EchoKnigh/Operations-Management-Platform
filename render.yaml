@@ -1,0 +1,24 @@
+# Render blueprint: one web service (API + built React app) and one Postgres database.
+databases:
+  - name: newtonite-ops-db
+    plan: free
+
+services:
+  - type: web
+    name: newtonite-ops
+    runtime: node
+    plan: free
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: newtonite-ops-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
